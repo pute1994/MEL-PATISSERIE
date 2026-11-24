@@ -99,6 +99,9 @@ i.v{background:var(--ok)}i.a{background:var(--ca)}
 .item{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer;align-items:center}
 .item:first-child{border-top:0}.item:hover{background:var(--bg)}
 .item span{display:block;font-size:14px;color:var(--mute)}.amt{white-space:nowrap}
+.art{cursor:default;align-items:flex-start}.art span+span{margin-top:2px}
+.ar{display:grid;justify-items:end;gap:6px;text-align:right;flex:none}.ar span{font-size:13px;color:var(--mute)}
+#hint{margin:-4px 0 0;color:var(--fr);font-weight:700}
 .tag{font-size:12px;font-weight:800;background:var(--oks);color:var(--ok);border-radius:6px;padding:1px 6px;margin-left:6px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
 .nv{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr)}
@@ -122,7 +125,7 @@ nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px
 .del{border:0;background:transparent;color:var(--bad);font-weight:800;min-height:48px;padding:0 10px;margin-right:auto}
 #toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--choc);color:var(--cream);padding:10px 18px;border-radius:999px;font-weight:800;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1}
-@media(max-width:600px){.cmd{grid-template-columns:1fr;gap:4px}.sub{max-width:100%}.hero svg{width:84px;height:84px;opacity:.9}.kpis b{font-size:17px}.cat{grid-template-columns:minmax(0,1fr) auto}.cat .bar{grid-column:1/-1;grid-row:2}.mbar{margin-left:auto}}
+@media(max-width:600px){.cmd{grid-template-columns:1fr;gap:4px}.sub{max-width:100%}.hero svg{width:84px;height:84px;opacity:.9}.kpis b{font-size:17px}.cat{grid-template-columns:minmax(0,1fr) auto}.cat .bar{grid-column:1/-1;grid-row:2}.hd{gap:10px}.gear{order:2}.mbar{order:3;width:100%;justify-content:space-between}.brand b{font-size:17px}}
 @media(max-width:380px){.grid{grid-template-columns:1fr}.fld.half{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -170,9 +173,9 @@ const CATS=['Ingrédients','Emballages & coffrets','Gaz & énergie','Transport &
 const UNITS=['kg','g','L','pièce','sachet','boîte','plateau','carton','lot'];
 const PAY=['Espèces','Wave','Orange Money','MTN MoMo','Moov Money','Virement'];
 const D={commandes:[],achats:[],ventes:[]};
-let mode='local',tab='home',month=today().slice(0,7),cf='avenir',q='';
+let mode='local',tab='home',month=today().slice(0,7),cf='avenir',q='',af='date';
 const LK='melpat-v1',QK='melpat-queue',CK='melpat-cfg';
-const NUM=['total','acompte','rappel','qte','montant','maj'];
+const NUM=['total','acompte','rappel','qte','montant','maj','pu'];
 let queue=[],cfg={url:'',cle:''},sync={busy:false,err:'',last:0};
 
 const open=c=>c.statut!=='livree'&&c.statut!=='annulee';
@@ -288,11 +291,30 @@ function cmds(){return`<div class="head"><h1>Commandes</h1><button class="add" d
   <input class="search" id="q" type="search" placeholder="Chercher un client, un produit, un numéro…" value="${esc(q)}" aria-label="Rechercher">
   <div id="list">${cmdList()}</div>`}
 
-function achats(){const s=stats(month),L=s.a.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+/* Articles achetés plusieurs fois : regroupement, prix à l'unité, rachat rapide */
+const akey=s=>String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
+const recent=(a,b)=>((b.date||'')+String(b.maj||'')).localeCompare((a.date||'')+String(a.maj||''));
+const lastAchat=k=>D.achats.filter(x=>akey(x.article)===k).sort(recent)[0];
+const fq=n=>String(Math.round(n*100)/100).replace('.',',');
+const puTxt=x=>(+x.pu>0||(+x.qte>0&&+x.montant>0))?money(+x.pu>0?x.pu:x.montant/x.qte)+(x.unite?'/'+esc(x.unite):''):'';
+function articles(){const g={};
+  for(const x of D.achats.slice().sort(recent)){const k=akey(x.article);if(!k)continue;
+    const a=g[k]||(g[k]={k,nom:String(x.article).trim().replace(/^./,c=>c.toUpperCase()),cat:x.cat,n:0,tot:0,mois:0,qm:{},last:x});
+    a.n++;a.tot+=+x.montant||0;if((x.date||'').startsWith(month))a.mois+=+x.montant||0;
+    if(+x.qte>0){const u=x.unite||'';a.qm[u]=(a.qm[u]||0)+(+x.qte)}}
+  return Object.values(g).sort((a,b)=>b.mois-a.mois||b.tot-a.tot||a.nom.localeCompare(b.nom))}
+function achatsParArticle(){const A=articles();
+  if(!A.length)return`<p class="empty">Aucun article pour l’instant. Chaque article acheté apparaîtra ici une seule fois, avec le total acheté et le dernier prix.</p>`;
+  return`<div class="list">${A.map(a=>{const q=Object.entries(a.qm).map(([u,n])=>fq(n)+(u?' '+esc(u):'')).join(' + ');const l=a.last;
+    return`<div class="item art"><div><b>${esc(a.nom)}</b><span>Acheté ${a.n} fois${q?' · '+q+' au total':''}</span><span>Dernier achat : ${fmtD(l.date)}${l.qte?' · '+fq(+l.qte)+' '+esc(l.unite||''):''} pour ${money(l.montant)}${puTxt(l)?' · '+puTxt(l):''}${l.fournisseur?' · '+esc(l.fournisseur):''}</span></div>
+    <div class="ar"><b class="amt">${money(a.tot)}</b>${a.mois?`<span>dont ${money(a.mois)} ce mois</span>`:''}<button class="btn" data-rebuy="${esc(a.k)}">Racheter</button></div></div>`}).join('')}</div>
+  <p class="note">Les totaux couvrent tous les achats enregistrés. « Racheter » ouvre un nouvel achat déjà rempli avec le dernier achat de cet article.</p>`}
+function achats(){const s=stats(month),L=s.a.slice().sort(recent);
   return`<div class="head"><h1>Achats</h1><button class="add" data-add="achats">+ Nouvel achat</button></div>
   <div class="tot"><span>Dépenses de ${monthLabel(month)}</span><b>${money(s.A)}</b></div>
-  ${catRows(s.a,'cat',CATS)}
-  ${L.length?`<div class="list">${L.map(x=>`<div class="item" data-edit="achats" data-id="${esc(x.id)}"><div><b>${esc(x.article)}</b><span>${fmtD(x.date)}${x.qte!==''&&x.qte!=null?' · '+esc(x.qte)+' '+esc(x.unite||''):''} · ${esc(x.cat||'Autre')}${x.fournisseur?' · '+esc(x.fournisseur):''}</span></div><b class="amt">${money(x.montant)}</b></div>`).join('')}</div>`:`<p class="empty">Aucun achat ce mois-ci. Note ici farine, sucre, beurre, œufs, emballages, gaz… pour connaître ton vrai bénéfice.</p>`}`}
+  <div class="chips">${[['date','Par date'],['article','Par article']].map(([k,l])=>`<button class="chip ${af===k?'on':''}" data-af="${k}">${l}</button>`).join('')}</div>
+  ${af==='article'?achatsParArticle():`${catRows(s.a,'cat',CATS)}
+  ${L.length?`<div class="list">${L.map(x=>`<div class="item" data-edit="achats" data-id="${esc(x.id)}"><div><b>${esc(x.article)}</b><span>${fmtD(x.date)}${x.qte!==''&&x.qte!=null?' · '+fq(+x.qte)+' '+esc(x.unite||''):''}${puTxt(x)?' · '+puTxt(x):''} · ${esc(x.cat||'Autre')}${x.fournisseur?' · '+esc(x.fournisseur):''}</span></div><b class="amt">${money(x.montant)}</b></div>`).join('')}</div>`:`<p class="empty">Aucun achat ce mois-ci. Note ici farine, sucre, beurre, œufs, emballages, gaz… pour connaître ton vrai bénéfice.</p>`}`}`}
 
 function ventes(){const s=stats(month),L=s.v.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   return`<div class="head"><h1>Ventes</h1><button class="add" data-add="ventes">+ Vente directe</button></div>
@@ -302,7 +324,7 @@ function ventes(){const s=stats(month),L=s.v.slice().sort((a,b)=>(b.date||'').lo
 
 const F={
 commandes:[{k:'client',l:'Nom du client',req:1},{k:'tel',l:'Téléphone (WhatsApp)',t:'tel'},{k:'produit',l:'Produit commandé',req:1,list:'produits'},{k:'details',l:'Détails (parfum, message, taille…)',t:'textarea'},{k:'date',l:'Date de livraison',t:'date',req:1,half:1},{k:'heure',l:'Heure',t:'time',half:1},{k:'lieu',l:'Lieu de livraison'},{k:'total',l:'Prix total (F)',t:'number',req:1,half:1},{k:'acompte',l:'Acompte reçu (F)',t:'number',half:1},{k:'paiement',l:'Mode de paiement',t:'select',o:PAY,half:1},{k:'rappel',l:'Me rappeler',t:'select',o:[['0','Le jour même'],['1','1 jour avant'],['2','2 jours avant'],['3','3 jours avant'],['7','1 semaine avant']],half:1},{k:'statut',l:'Statut',t:'select',o:Object.entries(ST)}],
-achats:[{k:'date',l:'Date',t:'date',req:1,half:1},{k:'cat',l:'Catégorie',t:'select',o:CATS,half:1},{k:'article',l:'Article acheté',req:1,list:'articles'},{k:'qte',l:'Quantité',t:'number',half:1},{k:'unite',l:'Unité',t:'select',o:UNITS,half:1},{k:'montant',l:'Montant payé (F)',t:'number',req:1},{k:'fournisseur',l:'Fournisseur ou marché',list:'fourn'}],
+achats:[{k:'date',l:'Date',t:'date',req:1,half:1},{k:'cat',l:'Catégorie',t:'select',o:CATS,half:1},{k:'article',l:'Article acheté',req:1,list:'articles'},{k:'qte',l:'Quantité',t:'number',half:1},{k:'unite',l:'Unité',t:'select',o:UNITS,half:1},{k:'pu',l:'Prix par unité (F)',t:'number',half:1},{k:'montant',l:'Montant total (F)',t:'number',req:1,half:1},{k:'fournisseur',l:'Fournisseur ou marché',list:'fourn'}],
 ventes:[{k:'date',l:'Date',t:'date',req:1,half:1},{k:'paiement',l:'Paiement',t:'select',o:PAY,half:1},{k:'produit',l:'Produit vendu',req:1,list:'produits'},{k:'qte',l:'Quantité',t:'number',half:1},{k:'montant',l:'Montant encaissé (F)',t:'number',req:1,half:1},{k:'client',l:'Client (facultatif)'}]};
 const DEF={commandes:()=>({date:iso(new Date(Date.now()+864e5)),rappel:'1',statut:'attente',paiement:'Espèces'}),achats:()=>({date:today(),cat:'Ingrédients',unite:'kg'}),ventes:()=>({date:today(),qte:1,paiement:'Espèces'})};
 const TT={commandes:['Nouvelle commande','Modifier la commande'],achats:['Nouvel achat','Modifier l’achat'],ventes:['Nouvelle vente','Modifier la vente']};
@@ -315,18 +337,39 @@ function field(f,val){val=val??'';const id='f_'+f.k;let inp;
 function datalists(){const u=a=>[...new Set(a.filter(Boolean))].slice(0,200).map(x=>`<option value="${esc(x)}">`).join('');
   $('#dls').innerHTML=`<datalist id="dl_produits">${u([...D.commandes.map(x=>x.produit),...D.ventes.map(x=>x.produit)])}</datalist><datalist id="dl_articles">${u(D.achats.map(x=>x.article))}</datalist><datalist id="dl_fourn">${u(D.achats.map(x=>x.fournisseur))}</datalist>`}
 
+/* Formulaire d'achat : quantité × prix par unité = montant, et reprise du dernier achat du même article */
+function achatForm(nouveau){
+  const Q=$('#f_qte'),P=$('#f_pu'),M=$('#f_montant'),A=$('#f_article');
+  const h=document.createElement('p');h.className='note fld';h.id='hint';$('#f_montant').closest('.fld').after(h);
+  const n=e=>{const x=parseFloat(String(e.value).replace(',','.'));return x>0?x:0};
+  const show=()=>{const q=n(Q),p=n(P),m=n(M);h.textContent=q&&p?`${fq(q)} × ${money(p)} = ${money(q*p)}`:q&&m?`Soit ${money(m/q)} par ${$('#f_unite').value}`:'Tape la quantité et le prix par unité : le montant se calcule tout seul.'};
+  const calc=()=>{const q=n(Q),p=n(P);if(q&&p)M.value=Math.round(q*p);show()};
+  Q.addEventListener('input',calc);P.addEventListener('input',calc);
+  M.addEventListener('input',()=>{const q=n(Q),m=n(M);if(q&&m)P.value=Math.round(m/q);show()});
+  $('#f_unite').addEventListener('change',show);
+  if(nouveau)A.addEventListener('change',()=>{const l=lastAchat(akey(A.value));if(!l)return;
+    if(l.cat)$('#f_cat').value=l.cat;if(l.unite)$('#f_unite').value=l.unite;
+    const f=$('#f_fournisseur');if(f&&!f.value&&l.fournisseur)f.value=l.fournisseur;
+    const lp=+l.pu>0?+l.pu:(+l.qte>0&&+l.montant>0?Math.round(l.montant/l.qte):0);if(!P.value&&lp)P.value=lp;
+    if(!Q.value&&+l.qte>0)Q.value=l.qte;calc();
+    toast(`Repris du dernier achat (${fmtD(l.date)})`)});
+  show();
+}
 function closeSheet(){$('#sheet').hidden=true;$('#sheet').innerHTML='';document.body.classList.remove('lock')}
-function openForm(col,id){
+function openForm(col,id,preset){
   const o=id?D[col].find(x=>x.id===id):null;
   if(col==='ventes'&&o&&o.cmd&&D.commandes.some(c=>c.id===o.cmd))return openForm('commandes',o.cmd);
-  const v=o?{...o}:DEF[col]();
+  const v=o?{...o}:{...DEF[col](),...(preset||{})};
   if(!o&&col!=='commandes'&&month!==today().slice(0,7))v.date=month+'-01';
+  if(col==='achats'&&!(+v.pu>0)&&+v.qte>0&&+v.montant>0)v.pu=Math.round(v.montant/v.qte);
   datalists();
   $('#sheet').innerHTML=`<form id="frm" class="panel" novalidate><div class="ph"><h2>${TT[col][o?1:0]}</h2><button type="button" class="x" data-close aria-label="Fermer">×</button></div>
   <div class="grid">${F[col].map(f=>field(f,v[f.k])).join('')}</div><p class="err" id="ferr"></p>
   <div class="fa">${o?'<button type="button" class="del" id="del">Supprimer</button>':''}<button class="save">Enregistrer</button></div></form>`;
   $('#sheet').hidden=false;document.body.classList.add('lock');
-  if(!o)setTimeout(()=>{const f=$('#frm input');f&&f.focus()},60);
+  if(!o&&!preset)setTimeout(()=>{const f=$('#frm input');f&&f.focus()},60);
+  if(preset)setTimeout(()=>{const f=$('#f_qte');f&&f.focus()},60);
+  if(col==='achats')achatForm(!o);
   $('#frm').onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.target),n=o?{...o}:{id:uid()};
     for(const f of F[col]){let x=String(fd.get(f.k)??'').trim();if(f.t==='number'&&x!=='')x=+x;if(f.req&&x===''){$('#ferr').textContent='À remplir : '+f.l;return}n[f.k]=x}
     n.maj=Date.now();const b=e.target.querySelector('.save');b.disabled=true;
@@ -358,6 +401,8 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(b=t.closest('[data-mshift]')){month=shiftMonth(month,+b.dataset.mshift);render();return}
   if(b=t.closest('[data-m]')){month=b.dataset.m;render();return}
   if(b=t.closest('[data-cf]')){cf=b.dataset.cf;render();return}
+  if(b=t.closest('[data-af]')){af=b.dataset.af;render();return}
+  if(b=t.closest('[data-rebuy]')){const l=lastAchat(b.dataset.rebuy);if(l){const p={...l};delete p.id;delete p.date;delete p.maj;return openForm('achats',null,p)}return}
   if(b=t.closest('[data-add]'))return openForm(b.dataset.add);
   if(b=t.closest('[data-edit]'))return openForm(b.dataset.edit,b.dataset.id);
   if(t.id==='copy')return copyBilan();
