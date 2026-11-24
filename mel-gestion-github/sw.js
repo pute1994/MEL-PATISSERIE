@@ -1,7 +1,7 @@
 // Garde l'application disponible même sans réseau.
 // Change le numéro de version quand tu modifies index.html.
-const VERSION = 'mel-gestion-v2';
-const FICHIERS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const VERSION = 'mel-gestion-v4';
+const FICHIERS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './logo.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FICHIERS)).then(() => self.skipWaiting()));

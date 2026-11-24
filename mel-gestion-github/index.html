@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#3b2217">
+<meta name="theme-color" content="#5b1a12">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -16,7 +16,7 @@
    PICTURE: le bénéfice du mois en grand, la balance ventes / dépenses, une pièce montée
    COLOUR and TYPE: chocolat, fraise, caramel ; Nunito
    LAYOUT: une colonne de 760px, onglets en bas, formulaires en feuille */
-:root{color-scheme:light dark;--bg:light-dark(#fffaf7,#1a110c);--card:light-dark(#fff,#261a13);--ink:light-dark(#2b1a12,#f6ebe4);--mute:light-dark(#7d6a60,#b9a69b);--line:light-dark(#eedfd6,#3a2a20);--choc:#3b2217;--cream:#fff3e6;--fr:light-dark(#d6336c,#ff6b9a);--frs:light-dark(#fde4ec,#43192a);--ca:light-dark(#c47a1e,#f0b45e);--cas:light-dark(#fbefdc,#3d2c14);--ok:light-dark(#1f8a5b,#5fd39b);--oks:light-dark(#e1f4ea,#173528);--bad:light-dark(#c0392b,#ff8a7a)}
+:root{color-scheme:light dark;--bg:light-dark(#fefaf1,#1c100c);--card:light-dark(#fff,#2a1913);--ink:light-dark(#3a1a12,#f7ece2);--mute:light-dark(#7f6a5e,#bba697);--line:light-dark(#efe2d2,#3d2a1f);--choc:#5b1a12;--cream:#fefaf1;--fr:light-dark(#9a2c1b,#f2967a);--frs:light-dark(#f7ece0,#3a1c14);--ca:light-dark(#b07a1e,#e2b65c);--cas:light-dark(#f9efda,#3b2c14);--ok:light-dark(#1f8a5b,#5fd39b);--oks:light-dark(#e1f4ea,#173528);--bad:light-dark(#c0392b,#ff8a7a)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Nunito,system-ui,sans-serif;overflow-x:clip;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
@@ -26,7 +26,7 @@ button{cursor:pointer}
 :focus-visible{outline:3px solid var(--fr);outline-offset:2px}
 header{background:var(--choc);color:var(--cream)}
 .hd{max-width:760px;margin:auto;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.logo{width:44px;height:44px;border-radius:50%;background:var(--cream);color:var(--choc);display:grid;place-items:center;font-weight:900;font-size:13px;letter-spacing:.5px;flex:none}
+.logo{width:52px;height:52px;border-radius:14px;background:var(--cream);flex:none;object-fit:contain;padding:2px;box-shadow:0 0 0 2px #c8932f66}
 .brand{flex:1}.brand b{display:block;font-size:18px;font-weight:900;line-height:1.1}.brand span{font-size:13px;opacity:.75}
 .mbar{display:flex;align-items:center;gap:4px;background:#ffffff1a;border-radius:999px;padding:3px}
 .mbar b{min-width:128px;text-align:center;font-size:15px;text-transform:capitalize}
@@ -43,7 +43,9 @@ h1{font-size:32px;line-height:1.05;margin:4px 0;font-weight:900}
 h2{font-size:20px;margin:28px 0 10px;font-weight:900;display:flex;align-items:center;gap:8px}
 .count{background:var(--fr);color:#fff;border-radius:999px;font-size:13px;padding:1px 9px}
 .hero{position:relative;background:var(--frs);border-radius:24px;padding:22px 20px 18px;overflow:hidden}
-.hero svg{position:absolute;right:14px;top:14px;width:118px;height:118px}
+.hero .hlogo{position:absolute;right:12px;top:10px;width:120px;height:120px;border-radius:20px;mix-blend-mode:multiply}
+:root[data-theme=dark] .hero .hlogo{mix-blend-mode:normal;opacity:.95}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero .hlogo{mix-blend-mode:normal;opacity:.95}}
 .hl{font-size:15px;font-weight:700;color:var(--mute)}.hl b{text-transform:capitalize;color:var(--ink)}
 .big{font-size:clamp(38px,9vw,56px);font-weight:900;line-height:1.05;color:var(--ok);margin:6px 0 2px;white-space:nowrap;position:relative}
 .big.neg,.neg{color:var(--bad)}
@@ -74,6 +76,11 @@ i.v{background:var(--ok)}i.a{background:var(--ca)}
 .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .btn{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:0 14px;min-height:40px;font-weight:800;font-size:14px;display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
 .btn.wa{background:#25d366;border-color:#25d366;color:#06301a}
+.btn.cal{background:#e8f0fe;border-color:#c6d7fb;color:#1a4fb8}
+.calbtns{display:grid;gap:10px;margin-top:14px}
+.calb{display:grid;gap:2px;text-align:left;text-decoration:none;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:44px;font:inherit;width:100%}
+.calb b{font-size:16px}.calb span{font-size:14px;color:var(--mute)}
+.calb.g{border-left:5px solid #1a73e8}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:18px;color:var(--mute);margin:0}
 .chart{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 10px 10px}
 .col{display:grid;justify-items:center;gap:4px;cursor:pointer;border-radius:10px;padding:4px 0}
@@ -125,14 +132,14 @@ nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px
 .del{border:0;background:transparent;color:var(--bad);font-weight:800;min-height:48px;padding:0 10px;margin-right:auto}
 #toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--choc);color:var(--cream);padding:10px 18px;border-radius:999px;font-weight:800;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1}
-@media(max-width:600px){.cmd{grid-template-columns:1fr;gap:4px}.sub{max-width:100%}.hero svg{width:84px;height:84px;opacity:.9}.kpis b{font-size:17px}.cat{grid-template-columns:minmax(0,1fr) auto}.cat .bar{grid-column:1/-1;grid-row:2}.hd{gap:10px}.gear{order:2}.mbar{order:3;width:100%;justify-content:space-between}.brand b{font-size:17px}}
+@media(max-width:600px){.cmd{grid-template-columns:1fr;gap:4px}.sub{max-width:100%}.hero .hlogo{width:84px;height:84px}.kpis b{font-size:17px}.cat{grid-template-columns:minmax(0,1fr) auto}.cat .bar{grid-column:1/-1;grid-row:2}.hd{gap:10px}.gear{order:2}.mbar{order:3;width:100%;justify-content:space-between}.brand b{font-size:17px}}
 @media(max-width:380px){.grid{grid-template-columns:1fr}.fld.half{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <header><div class="hd">
-  <div class="logo" aria-hidden="true">MEL</div>
+  <img class="logo" src="logo.png" alt="Logo MEL Pâtisserie &amp; Snacks" width="52" height="52">
   <div class="brand"><b>Mel Pâtisserie &amp; Snacks</b><span>Gestion de la boutique</span></div>
   <div class="mbar" id="mbar"><button data-mshift="-1" aria-label="Mois précédent">‹</button><b id="mlabel"></b><button data-mshift="1" aria-label="Mois suivant">›</button></div>
   <button class="gear" id="cfgbtn" aria-label="Réglages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
@@ -252,13 +259,13 @@ function cmdCard(c){const s=c.statut||'attente',r=(+c.total||0)-(+c.acompte||0),
   <div><div class="top"><b>${esc(c.client||'Client')}</b><span class="pill">${ST[s]}</span></div>
   <div class="prod">${esc(c.produit)}${c.details?` <span class="mute">— ${esc(c.details)}</span>`:''}</div>
   <div class="meta">${money(c.total)}${open(c)&&r>0?` · <span class="due">reste ${money(r)}</span>`:c.total&&r<=0?' · payé':''}${c.lieu?' · '+esc(c.lieu):''}</div>
-  ${open(c)?`<div class="acts">${nx?`<button class="btn" data-next="${esc(c.id)}">→ ${ST[nx]}</button>`:''}${wa(c)}</div>`:''}</div></article>`}
+  ${open(c)?`<div class="acts">${nx?`<button class="btn" data-next="${esc(c.id)}">→ ${ST[nx]}</button>`:''}${wa(c)}<button class="btn cal" data-cal="${esc(c.id)}">Agenda</button></div>`:''}</div></article>`}
 
 function stats(m){const v=D.ventes.filter(x=>(x.date||'').startsWith(m)),a=D.achats.filter(x=>(x.date||'').startsWith(m));const V=sum(v,'montant'),A=sum(a,'montant');return{v,a,V,A,B:V-A}}
 function catRows(items,key,list){const t=list.map(c=>({c,t:sum(items.filter(x=>(x[key]||list[list.length-1])===c),'montant')})).filter(x=>x.t>0).sort((a,b)=>b.t-a.t);const mx=Math.max(1,...t.map(x=>x.t));
   return t.map(x=>`<div class="cat"><span>${esc(x.c)}</span><div class="bar"><i class="a" style="width:${x.t/mx*100}%"></i></div><b>${money(x.t)}</b></div>`).join('')}
 
-const CAKE=`<svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="108" rx="48" ry="7" fill="#3b221722"/><rect x="18" y="70" width="84" height="34" rx="8" fill="#3b2217"/><rect x="18" y="70" width="84" height="10" rx="5" fill="#fff3e6"/><rect x="30" y="44" width="60" height="28" rx="7" fill="#d6336c"/><rect x="30" y="44" width="60" height="8" rx="4" fill="#fff3e6"/><rect x="42" y="24" width="36" height="22" rx="6" fill="#c47a1e"/><rect x="42" y="24" width="36" height="6" rx="3" fill="#fff3e6"/><circle cx="60" cy="17" r="7" fill="#d6336c"/><circle cx="57.5" cy="14.5" r="2" fill="#fff"/></svg>`;
+const CAKE=`<img class="hlogo" src="logo.png" alt="" aria-hidden="true">`;
 
 function home(){const s=stats(month),mx=Math.max(s.V,s.A,1),up=D.commandes.filter(open),R=reminders();
   const reste=up.reduce((t,c)=>t+Math.max(0,(+c.total||0)-(+c.acompte||0)),0),marge=s.V?Math.round(s.B/s.V*100):0;
@@ -355,6 +362,36 @@ function achatForm(nouveau){
     toast(`Repris du dernier achat (${fmtD(l.date)})`)});
   show();
 }
+/* Rappels dans l'agenda du téléphone : Google Agenda (veille 18 h / jour J) ou fichier .ics avec alarmes */
+const enc=encodeURIComponent;
+const at=(d,h)=>new Date(d+'T'+(h||'10:00')+':00');
+const plus=(t,m)=>new Date(t.getTime()+m*6e4);
+const gl=t=>t.getFullYear()+pad(t.getMonth()+1)+pad(t.getDate())+'T'+pad(t.getHours())+pad(t.getMinutes())+'00';
+const zu=t=>t.toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+function calInfo(c){const r=(+c.total||0)-(+c.acompte||0);
+  return[`Client : ${c.client||''}`,c.tel?`Téléphone : ${c.tel}`:'',`Produit : ${c.produit||''}`,c.details?`Détails : ${c.details}`:'',`Total : ${money(c.total)}`+(r>0?` · Reste à payer : ${money(r)}`:' · Payé'),c.lieu?`Lieu : ${c.lieu}`:'','Mel Pâtisserie & Snacks'].filter(Boolean).join('\n')}
+function gcal(title,a,b,c){return'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+enc(title)+'&dates='+gl(a)+'/'+gl(b)+'&ctz=Africa%2FAbidjan&details='+enc(calInfo(c))+(c.lieu?'&location='+enc(c.lieu):'')}
+function openCal(id){const c=D.commandes.find(x=>x.id===id);if(!c)return;
+  const jour=at(c.date,c.heure),veille=at(shiftDay(c.date,-1),'18:00'),now=new Date();
+  const nom=(c.client||'Client')+' — '+(c.produit||'commande');
+  $('#sheet').innerHTML=`<div class="panel"><div class="ph"><h2>Ajouter à l’agenda</h2><button type="button" class="x" data-close aria-label="Fermer">×</button></div>
+  <p class="note"><b>${esc(nom)}</b> · ${when(c,1)}</p>
+  <div class="calbtns">
+  ${jour>now?`<a class="calb g" href="${gcal('Livraison : '+nom,jour,plus(jour,60),c)}" target="_blank" rel="noopener"><b>Le jour de la livraison</b><span>${esc(fmtLong(c.date))}${c.heure?' à '+esc(c.heure):' à 10:00'} · Google Agenda</span></a>`:''}
+  ${veille>now?`<a class="calb g" href="${gcal('Préparer : '+nom,veille,plus(veille,30),c)}" target="_blank" rel="noopener"><b>La veille à 18 h, pour préparer</b><span>${esc(fmtLong(shiftDay(c.date,-1)))} à 18:00 · Google Agenda</span></a>`:''}
+  ${jour>now?`<button type="button" class="calb" data-ics="${esc(c.id)}"><b>Autre agenda (iPhone, Outlook…)</b><span>Un fichier avec 2 rappels : la veille à 18 h et 2 h avant</span></button>`:'<p class="empty">Cette livraison est déjà passée : pas de rappel à créer.</p>'}
+  </div>
+  <p class="note">Google Agenda s’ouvre avec tout déjà rempli : touche <b>Enregistrer</b>. Avant d’enregistrer, tu peux toucher « Ajouter une notification » pour choisir quand le téléphone sonne (par exemple 2 heures avant).</p></div>`;
+  $('#sheet').hidden=false;document.body.classList.add('lock')}
+function shiftDay(d,k){const t=at(d,'12:00');t.setDate(t.getDate()+k);return iso(t)}
+function ics(id){const c=D.commandes.find(x=>x.id===id);if(!c)return;
+  const e=v=>String(v).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/[,;]/g,m=>'\\'+m);
+  const a=at(c.date,c.heure),v=at(shiftDay(c.date,-1),'18:00'),nom=(c.client||'Client')+' — '+(c.produit||'commande');
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mel Patisserie//Gestion//FR','BEGIN:VEVENT','UID:'+c.id+'@mel-patisserie','DTSTAMP:'+zu(new Date()),'DTSTART:'+zu(a),'DTEND:'+zu(plus(a,60)),'SUMMARY:'+e('Livraison : '+nom),'DESCRIPTION:'+e(calInfo(c))];
+  if(c.lieu)L.push('LOCATION:'+e(c.lieu));
+  if(v>new Date())L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+e('Préparer : '+nom),'TRIGGER;VALUE=DATE-TIME:'+zu(v),'END:VALARM');
+  L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+e('Livraison dans 2 h : '+nom),'TRIGGER:-PT2H','END:VALARM','END:VEVENT','END:VCALENDAR');
+  try{const u=URL.createObjectURL(new Blob([L.join('\r\n')],{type:'text/calendar'}));const l=document.createElement('a');l.href=u;l.download='commande-'+(c.client||'mel').replace(/[^\w-]+/g,'_')+'.ics';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Fichier agenda téléchargé : ouvre-le')}catch(err){toast('Téléchargement impossible ici')}}
 function closeSheet(){$('#sheet').hidden=true;$('#sheet').innerHTML='';document.body.classList.remove('lock')}
 function openForm(col,id,preset){
   const o=id?D[col].find(x=>x.id===id):null;
@@ -397,6 +434,7 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('[data-close]')||t.id==='sheet')return closeSheet();
   if(t.closest('a.wa'))return;
   if(b=t.closest('[data-next]')){e.stopPropagation();return nextStatus(b.dataset.next)}
+  if(b=t.closest('[data-cal]')){e.stopPropagation();return openCal(b.dataset.cal)}
   if(b=t.closest('[data-tab]')){tab=b.dataset.tab;render();scrollTo(0,0);return}
   if(b=t.closest('[data-mshift]')){month=shiftMonth(month,+b.dataset.mshift);render();return}
   if(b=t.closest('[data-m]')){month=b.dataset.m;render();return}
@@ -405,6 +443,7 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(b=t.closest('[data-rebuy]')){const l=lastAchat(b.dataset.rebuy);if(l){const p={...l};delete p.id;delete p.date;delete p.maj;return openForm('achats',null,p)}return}
   if(b=t.closest('[data-add]'))return openForm(b.dataset.add);
   if(b=t.closest('[data-edit]'))return openForm(b.dataset.edit,b.dataset.id);
+  if(b=t.closest('[data-ics]'))return ics(b.dataset.ics);
   if(t.id==='copy')return copyBilan();
   if(t.closest('#cfgbtn,[data-cfg]'))return openCfg();
   if(t.closest('[data-retry]')){sync.err='';render();return pull()}
